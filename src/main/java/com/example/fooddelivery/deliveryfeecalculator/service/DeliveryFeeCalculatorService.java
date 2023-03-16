@@ -20,16 +20,16 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class WeatherDataService {
+public class DeliveryFeeCalculatorService {
     private final WeatherDataRepository weatherDataRepository;
     private RestTemplate restTemplate;
     private DeliveryFeeCalculator deliveryFeeCalculator;
 
     @Autowired
-    public WeatherDataService(WeatherDataRepository weatherDataRepository, RestTemplate restTemplate, DeliveryFeeCalculator deliveryFeeService) {
+    public DeliveryFeeCalculatorService(WeatherDataRepository weatherDataRepository, RestTemplate restTemplate, DeliveryFeeCalculator DeliveryFeeCalculator) {
         this.weatherDataRepository = weatherDataRepository;
         this.restTemplate = restTemplate;
-        this.deliveryFeeCalculator = deliveryFeeService;
+        this.deliveryFeeCalculator = DeliveryFeeCalculator;
     }
 
     /**
