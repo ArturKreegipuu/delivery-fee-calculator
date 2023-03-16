@@ -1,31 +1,14 @@
 package com.example.fooddelivery.deliveryfeecalculator.controller;
 
 import com.example.fooddelivery.deliveryfeecalculator.model.WeatherData;
-import com.example.fooddelivery.deliveryfeecalculator.repository.WeatherDataRepository;
-import com.example.fooddelivery.deliveryfeecalculator.service.DeliveryFeeService;
 import com.example.fooddelivery.deliveryfeecalculator.service.WeatherDataService;
 import io.swagger.v3.oas.annotations.Operation;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.StringReader;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping

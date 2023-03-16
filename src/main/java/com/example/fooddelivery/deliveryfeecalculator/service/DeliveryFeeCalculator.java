@@ -2,6 +2,7 @@ package com.example.fooddelivery.deliveryfeecalculator.service;
 
 import com.example.fooddelivery.deliveryfeecalculator.exception.VehicleException;
 import com.example.fooddelivery.deliveryfeecalculator.model.WeatherData;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,13 @@ public class DeliveryFeeCalculator {
 
     public double calculateFee() {
         try {
+            checkVehicle(vehicle);
+            checkCity(city);
+        } catch (IllegalArgumentException e){
+            e.getMessage();
+            return -1;
+        }
+        try {
             if (vehicle.equals("scooter") || vehicle.equals("bike")) {
                 this.ATEF = calculateATEF();
                 this.WPEF = calculateWPEF();
@@ -30,13 +38,22 @@ public class DeliveryFeeCalculator {
             }
         } catch (VehicleException e) {
             e.getMessage();
+            return -1;
         }
         calculateRBF(this.city, this.vehicle);
         return RBF + ATEF + WSEF + WPEF;
     }
 
+    public void checkVehicle(String vehicle){
+        if (!vehicle.equals("car") && !vehicle.equals("bike") && !vehicle.equals("scooter"))
+            throw new IllegalArgumentException("Invalid vehicle type!");
+    }
+    public void checkCity(String city){
+        if (!city.equals("tartu") && !city.equals("tallinn") && !city.equals("pärnu"))
+            throw new IllegalArgumentException("Invalid city!");
+    }
 
-    private void calculateRBF(String city, String vehicle) {
+    public void calculateRBF(String city, String vehicle) {
         switch (city) {
             case "tallinn":
                 switch (vehicle) {
@@ -77,26 +94,24 @@ public class DeliveryFeeCalculator {
                         break;
                 }
                 break;
-            default:
-                throw new RuntimeException("Invalid input parameters");
         }
     }
 
-    private double calculateATEF() {
+    public double calculateATEF() {
         double temp = weatherData.getAir_temp();
         if (temp < -10) return 1;
         else if (temp <= 0) return 0.5;
         return 0;
     }
 
-    private double calculateWSEF() throws VehicleException {
+    public double calculateWSEF() throws VehicleException {
         double wind_speed = weatherData.getWind_speed();
         if (wind_speed > 20) throw new VehicleException("Usage of selected vehicle type is forbidden");
         else if (wind_speed <= 20 && wind_speed >= 10) return 0.5;
         return 0;
     }
 
-    private double calculateWPEF() throws VehicleException {
+    public double calculateWPEF() throws VehicleException {
         String phenomenon = weatherData.getWeather_phenomenon().toLowerCase();
         if (phenomenon.contains("snow") || phenomenon.contains("sleet")) return 1;
         else if (phenomenon.contains("rain")) return 0.5;
