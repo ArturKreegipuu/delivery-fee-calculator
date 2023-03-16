@@ -6,7 +6,7 @@
 
 Food delivery application that calculates the delivery fee for food couriers based on regional base fee, vehicle type, and weather conditions.
 
-#### Scheduled task for importing weather data (CronJob) is configurable at application.properties file.
+#### Scheduled task for importing weather data (CronJob) is configurable at ***application.properties*** file. Right now CronJob is executed once every hour, 15 minutes after a full hour (HH:15:00).
 
 #### Once the application is running you can access:
 * H2 database interface at: http://localhost:8080/h2-console
