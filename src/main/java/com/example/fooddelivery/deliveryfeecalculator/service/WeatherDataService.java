@@ -1,5 +1,6 @@
 package com.example.fooddelivery.deliveryfeecalculator.service;
 
+import com.example.fooddelivery.deliveryfeecalculator.exception.ApiRequestException;
 import com.example.fooddelivery.deliveryfeecalculator.model.WeatherData;
 import com.example.fooddelivery.deliveryfeecalculator.repository.WeatherDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +30,6 @@ public class WeatherDataService {
         this.weatherDataRepository = weatherDataRepository;
         this.restTemplate = restTemplate;
         this.deliveryFeeCalculator = deliveryFeeService;
-    }
-
-    public Iterable<WeatherData> findAll() {
-        return weatherDataRepository.findAll();
     }
 
     public List<WeatherData> fetchLatestWeatherData() {
@@ -78,7 +75,7 @@ public class WeatherDataService {
     }
 
 
-    public double calculateFee(String city, String vehicle){
+    public double calculateFee(String city, String vehicle) throws ApiRequestException {
         WeatherData weatherData = findLatest(city.toLowerCase());
         deliveryFeeCalculator.setATEF(0);
         deliveryFeeCalculator.setRBF(0);
@@ -90,9 +87,9 @@ public class WeatherDataService {
         return deliveryFeeCalculator.calculateFee();
     }
 
-    public WeatherData findLatest(String name) {
+    public WeatherData findLatest(String name) throws ApiRequestException {
 
-        // Convert pathvariable to match name in the database
+        // Check if city name is "tartu", "tallinn" or "pärnu" and convert it to match name in the database(station's name)
         name = getLocationName(name);
 
         List<WeatherData> weatherDataList = (List<WeatherData>) weatherDataRepository.findAll();
@@ -103,7 +100,7 @@ public class WeatherDataService {
         Collections.sort(latestWeatherDataList);
         return latestWeatherDataList.get(latestWeatherDataList.size()-1);
     }
-    private String getLocationName(String alias) {
+    private String getLocationName(String alias) throws ApiRequestException {
         switch (alias.toLowerCase()) {
             case "tartu":
                 return "Tartu-Tõravere";
@@ -112,7 +109,7 @@ public class WeatherDataService {
             case "pärnu":
                 return "Pärnu";
             default:
-                return alias;
+                throw new ApiRequestException("Invalid city!");
         }
     }
 }

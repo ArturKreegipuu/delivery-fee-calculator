@@ -1,8 +1,7 @@
 package com.example.fooddelivery.deliveryfeecalculator.service;
 
-import com.example.fooddelivery.deliveryfeecalculator.exception.VehicleException;
+import com.example.fooddelivery.deliveryfeecalculator.exception.ApiRequestException;
 import com.example.fooddelivery.deliveryfeecalculator.model.WeatherData;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -15,43 +14,32 @@ public class DeliveryFeeCalculator {
 
     private String city;
     private String vehicle;
-    private double RBF; // regional base fee
-    private double ATEF; // air temperature extra fee
-    private double WSEF; // wind speed extra fee
-    private double WPEF; // weather phenomenon extra fee
-    private WeatherData weatherData;
+    private double RBF; // Regional base fee
+    private double ATEF; // Air temperature extra fee
+    private double WSEF; // Wind speed extra fee
+    private double WPEF; // Weather phenomenon extra fee
+    private WeatherData weatherData; // Weather data about this city
 
 
-    public double calculateFee() {
-        try {
-            checkVehicle(vehicle);
-            checkCity(city);
-        } catch (IllegalArgumentException e){
-            e.getMessage();
-            return -1;
+    public double calculateFee() throws ApiRequestException {
+        if (!checkVehicle(vehicle)) throw new ApiRequestException("Invalid vehicle type!");
+        else calculateRBF(this.city, this.vehicle);
+
+        if (vehicle.equals("scooter") || vehicle.equals("bike")) {
+            this.ATEF = calculateATEF();
+            this.WPEF = calculateWPEF();
+            if (vehicle.equals("bike")) this.WSEF = calculateWSEF();
         }
-        try {
-            if (vehicle.equals("scooter") || vehicle.equals("bike")) {
-                this.ATEF = calculateATEF();
-                this.WPEF = calculateWPEF();
-                if (vehicle.equals("bike")) this.WSEF = calculateWSEF();
-            }
-        } catch (VehicleException e) {
-            e.getMessage();
-            return -1;
-        }
-        calculateRBF(this.city, this.vehicle);
+
         return RBF + ATEF + WSEF + WPEF;
     }
 
-    public void checkVehicle(String vehicle){
+    public boolean checkVehicle(String vehicle) {
         if (!vehicle.equals("car") && !vehicle.equals("bike") && !vehicle.equals("scooter"))
-            throw new IllegalArgumentException("Invalid vehicle type!");
+            return false;
+        return true;
     }
-    public void checkCity(String city){
-        if (!city.equals("tartu") && !city.equals("tallinn") && !city.equals("pärnu"))
-            throw new IllegalArgumentException("Invalid city!");
-    }
+
 
     public void calculateRBF(String city, String vehicle) {
         switch (city) {
@@ -104,19 +92,19 @@ public class DeliveryFeeCalculator {
         return 0;
     }
 
-    public double calculateWSEF() throws VehicleException {
+    public double calculateWSEF() throws ApiRequestException {
         double wind_speed = weatherData.getWind_speed();
-        if (wind_speed > 20) throw new VehicleException("Usage of selected vehicle type is forbidden");
+        if (wind_speed > 20) throw new ApiRequestException("Usage of selected vehicle type is forbidden");
         else if (wind_speed <= 20 && wind_speed >= 10) return 0.5;
         return 0;
     }
 
-    public double calculateWPEF() throws VehicleException {
+    public double calculateWPEF() throws ApiRequestException {
         String phenomenon = weatherData.getWeather_phenomenon().toLowerCase();
         if (phenomenon.contains("snow") || phenomenon.contains("sleet")) return 1;
         else if (phenomenon.contains("rain")) return 0.5;
         else if (phenomenon.contains("glaze") || phenomenon.contains("hail") || phenomenon.contains("thunder"))
-            throw new VehicleException("Usage of selected vehicle type is forbidden");
+            throw new ApiRequestException("Usage of selected vehicle type is forbidden");
         return 0;
     }
 }

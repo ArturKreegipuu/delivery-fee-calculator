@@ -1,6 +1,5 @@
 package com.example.fooddelivery.deliveryfeecalculator;
 
-import com.example.fooddelivery.deliveryfeecalculator.service.DeliveryFeeService;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.models.annotations.OpenAPI30;
 import org.springframework.boot.SpringApplication;

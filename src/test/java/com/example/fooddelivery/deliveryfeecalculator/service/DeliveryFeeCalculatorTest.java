@@ -1,11 +1,10 @@
 package com.example.fooddelivery.deliveryfeecalculator.service;
 
-import com.example.fooddelivery.deliveryfeecalculator.exception.VehicleException;
+import com.example.fooddelivery.deliveryfeecalculator.exception.ApiRequestException;
 import com.example.fooddelivery.deliveryfeecalculator.model.WeatherData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.context.event.annotation.BeforeTestClass;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -25,9 +24,9 @@ class DeliveryFeeCalculatorTest {
      */
     @Test
     void incorrectVehicle() {
-        IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+        ApiRequestException thrown = Assertions.assertThrows(ApiRequestException.class, () -> {
             deliveryFeeCalculator.checkVehicle("skateboard");
-        }, "IllegalArgumentException error was expected");
+        }, "ApiRequestException error was expected");
 
         Assertions.assertEquals("Invalid vehicle type!", thrown.getMessage());
     }
@@ -37,9 +36,9 @@ class DeliveryFeeCalculatorTest {
      */
     @Test
     void incorrectCity() {
-        IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+        ApiRequestException thrown = Assertions.assertThrows(ApiRequestException.class, () -> {
             deliveryFeeCalculator.checkCity("narva");
-        }, "IllegalArgumentException error was expected");
+        }, "ApiRequestException error was expected");
 
         Assertions.assertEquals("Invalid city!", thrown.getMessage());
     }
@@ -100,7 +99,7 @@ class DeliveryFeeCalculatorTest {
      * We assume that vehicle type is "bike"
      */
     @Test
-    void testWSEF() throws VehicleException {
+    void testWSEF() throws ApiRequestException {
         // Wind speed is between 10 m/s and 20 m/s, then WSEF = 0,5 €
         weatherData.setWind_speed(15);
         deliveryFeeCalculator.setWeatherData(weatherData);
@@ -109,7 +108,7 @@ class DeliveryFeeCalculatorTest {
         // In case of wind speed is greater than 20 m/s, then the error message “Usage of selected vehicle type is forbidden” has to be given
         weatherData.setWind_speed(25);
         deliveryFeeCalculator.setWeatherData(weatherData);
-        VehicleException thrown = assertThrows(VehicleException.class, () ->
+        ApiRequestException thrown = assertThrows(ApiRequestException.class, () ->
                 deliveryFeeCalculator.calculateWSEF(), "VehicleException error was expected"
         );
         assertTrue(thrown.getMessage().contentEquals("Usage of selected vehicle type is forbidden"));
@@ -122,7 +121,7 @@ class DeliveryFeeCalculatorTest {
      * We assume that vehicle type is "scooter" or "bike"
      */
     @Test
-    void testWPEF() throws VehicleException {
+    void testWPEF() throws ApiRequestException {
         // Weather phenomenon is related to snow or sleet, then WPEF = 1 €
         weatherData.setWeather_phenomenon("light snow");
         deliveryFeeCalculator.setWeatherData(weatherData);
@@ -140,8 +139,8 @@ class DeliveryFeeCalculatorTest {
         // selected vehicle type is forbidden” has to be given
         weatherData.setWeather_phenomenon("glaze");
         deliveryFeeCalculator.setWeatherData(weatherData);
-        VehicleException thrown = assertThrows(VehicleException.class, () ->
-                deliveryFeeCalculator.calculateWPEF(), "VehicleException error was expected"
+        ApiRequestException thrown = assertThrows(ApiRequestException.class, () ->
+                deliveryFeeCalculator.calculateWPEF(), "ApiRequestException error was expected"
         );
         assertTrue(thrown.getMessage().contentEquals("Usage of selected vehicle type is forbidden"));
         // WPEF should be equal to 0
@@ -149,8 +148,8 @@ class DeliveryFeeCalculatorTest {
 
         weatherData.setWeather_phenomenon("hail");
         deliveryFeeCalculator.setWeatherData(weatherData);
-        VehicleException thrown2 = assertThrows(VehicleException.class, () ->
-                deliveryFeeCalculator.calculateWPEF(), "VehicleException error was expected"
+        ApiRequestException thrown2 = assertThrows(ApiRequestException.class, () ->
+                deliveryFeeCalculator.calculateWPEF(), "ApiRequestException error was expected"
         );
         assertTrue(thrown2.getMessage().contentEquals("Usage of selected vehicle type is forbidden"));
         // WPEF should be equal to 0
@@ -158,8 +157,8 @@ class DeliveryFeeCalculatorTest {
 
         weatherData.setWeather_phenomenon("thunder");
         deliveryFeeCalculator.setWeatherData(weatherData);
-        VehicleException thrown3 = assertThrows(VehicleException.class, () ->
-                deliveryFeeCalculator.calculateWPEF(), "VehicleException error was expected"
+        ApiRequestException thrown3 = assertThrows(ApiRequestException.class, () ->
+                deliveryFeeCalculator.calculateWPEF(), "ApiRequestException error was expected"
         );
         assertTrue(thrown3.getMessage().contentEquals("Usage of selected vehicle type is forbidden"));
         // WPEF should be equal to 0
@@ -170,7 +169,7 @@ class DeliveryFeeCalculatorTest {
      * Test if delivery fee is calculated correctly
      */
     @Test
-    void testCalculateFee(){
+    void testCalculateFee() throws ApiRequestException {
         weatherData.setAir_temp(8);
         weatherData.setWind_speed(9);
         weatherData.setWeather_phenomenon("Light rain");
@@ -187,7 +186,7 @@ class DeliveryFeeCalculatorTest {
      * and is calculated if vehicle is "scooter" or "bike" in calculateFee() method
      */
     @Test
-    void testATEFType(){
+    void testATEFType() throws ApiRequestException {
         weatherData.setAir_temp(-11);
         weatherData.setWind_speed(9);
         weatherData.setWeather_phenomenon("clear");
@@ -217,7 +216,7 @@ class DeliveryFeeCalculatorTest {
      * and is calculated if vehicle is "scooter" or "bike" in calculateFee() method
      */
     @Test
-    void testWPEFType(){
+    void testWPEFType() throws ApiRequestException {
         weatherData.setAir_temp(-11);
         weatherData.setWind_speed(9);
         weatherData.setWeather_phenomenon("light snow");
@@ -247,7 +246,7 @@ class DeliveryFeeCalculatorTest {
      * and is calculated if vehicle is "bike" in calculateFee() method
      */
     @Test
-    void testWSEFType(){
+    void testWSEFType() throws ApiRequestException {
         weatherData.setAir_temp(-11);
         weatherData.setWind_speed(15);
         weatherData.setWeather_phenomenon("light snow");

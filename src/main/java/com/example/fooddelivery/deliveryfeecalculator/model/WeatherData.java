@@ -11,15 +11,15 @@ import java.time.LocalDateTime;
 public class WeatherData implements Comparable<WeatherData>{
     @Id
     private Long id;
-    private String name;
-    private String WMO;
-    private double air_temp;
-    private double wind_speed;
-    private String weather_phenomenon;
-    private LocalDateTime timestamp;
+    private String name; // Name of the station
+    private String WMO; // WMO code of the station
+    private double air_temp; // Air temperature
+    private double wind_speed; // Wind speed
+    private String weather_phenomenon; //  Weather phenomenon
+    private LocalDateTime timestamp; // Timestamp of the observations
 
 
-    // Calculations must base on the latest weather data for a specific city so I will sort the list in order from the oldest to the latest
+    // Calculations must base on the latest weather data for a specific city so I will sort the list of station's weather data in order from the oldest to the latest
     /**
      * Method compares two WeatherData objects based on their timestamp.
      *
