@@ -1,6 +1,7 @@
 package com.example.fooddelivery.deliveryfeecalculator.model;
 
 import lombok.*;
+
 import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
