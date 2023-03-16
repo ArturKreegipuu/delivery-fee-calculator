@@ -2,12 +2,8 @@ package com.example.fooddelivery.deliveryfeecalculator.service;
 
 import com.example.fooddelivery.deliveryfeecalculator.model.WeatherData;
 import com.example.fooddelivery.deliveryfeecalculator.repository.WeatherDataRepository;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.client.RestTemplate;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -26,13 +22,13 @@ import java.util.stream.Collectors;
 public class WeatherDataService {
     private final WeatherDataRepository weatherDataRepository;
     private RestTemplate restTemplate;
-    private DeliveryFeeService deliveryFeeService;
+    private DeliveryFeeCalculator deliveryFeeCalculator;
 
     @Autowired
-    public WeatherDataService(WeatherDataRepository weatherDataRepository, RestTemplate restTemplate, DeliveryFeeService deliveryFeeService) {
+    public WeatherDataService(WeatherDataRepository weatherDataRepository, RestTemplate restTemplate, DeliveryFeeCalculator deliveryFeeService) {
         this.weatherDataRepository = weatherDataRepository;
         this.restTemplate = restTemplate;
-        this.deliveryFeeService = deliveryFeeService;
+        this.deliveryFeeCalculator = deliveryFeeService;
     }
 
     public Iterable<WeatherData> findAll() {
@@ -84,14 +80,14 @@ public class WeatherDataService {
 
     public double calculateFee(String city, String vehicle){
         WeatherData weatherData = findLatest(city.toLowerCase());
-        deliveryFeeService.setATEF(0);
-        deliveryFeeService.setRBF(0);
-        deliveryFeeService.setWPEF(0);
-        deliveryFeeService.setWSEF(0);
-        deliveryFeeService.setCity(city.toLowerCase());
-        deliveryFeeService.setVehicle(vehicle.toLowerCase());
-        deliveryFeeService.setWeatherData(weatherData);
-        return deliveryFeeService.calculateFee();
+        deliveryFeeCalculator.setATEF(0);
+        deliveryFeeCalculator.setRBF(0);
+        deliveryFeeCalculator.setWPEF(0);
+        deliveryFeeCalculator.setWSEF(0);
+        deliveryFeeCalculator.setCity(city.toLowerCase());
+        deliveryFeeCalculator.setVehicle(vehicle.toLowerCase());
+        deliveryFeeCalculator.setWeatherData(weatherData);
+        return deliveryFeeCalculator.calculateFee();
     }
 
     public WeatherData findLatest(String name) {

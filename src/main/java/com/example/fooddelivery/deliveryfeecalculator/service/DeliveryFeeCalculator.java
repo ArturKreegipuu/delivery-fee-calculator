@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Data
 @Component
 @NoArgsConstructor
-public class DeliveryFeeService {
+public class DeliveryFeeCalculator {
 
     private String city;
     private String vehicle;
