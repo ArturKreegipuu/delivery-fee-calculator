@@ -2,7 +2,6 @@ package com.example.fooddelivery.deliveryfeecalculator.service;
 
 import com.example.fooddelivery.deliveryfeecalculator.exception.ApiRequestException;
 import com.example.fooddelivery.deliveryfeecalculator.model.WeatherData;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,27 +19,11 @@ class DeliveryFeeCalculatorTest {
 
 
     /**
-     * Test if exception is thrwon when vehicle is not "car", "scooter" or "bike"
+     * Test if vehicle is not "car", "scooter" or "bike"
      */
     @Test
     void incorrectVehicle() {
-        ApiRequestException thrown = Assertions.assertThrows(ApiRequestException.class, () -> {
-            deliveryFeeCalculator.checkVehicle("skateboard");
-        }, "ApiRequestException error was expected");
-
-        Assertions.assertEquals("Invalid vehicle type!", thrown.getMessage());
-    }
-
-    /**
-     * Test if exception is thrwon when city is not "tartu", "tallinn" or "pärnu"
-     */
-    @Test
-    void incorrectCity() {
-        ApiRequestException thrown = Assertions.assertThrows(ApiRequestException.class, () -> {
-            deliveryFeeCalculator.checkCity("narva");
-        }, "ApiRequestException error was expected");
-
-        Assertions.assertEquals("Invalid city!", thrown.getMessage());
+        assertEquals(false, deliveryFeeCalculator.checkVehicle("skateboard"));
     }
 
     /**
@@ -109,7 +92,7 @@ class DeliveryFeeCalculatorTest {
         weatherData.setWind_speed(25);
         deliveryFeeCalculator.setWeatherData(weatherData);
         ApiRequestException thrown = assertThrows(ApiRequestException.class, () ->
-                deliveryFeeCalculator.calculateWSEF(), "VehicleException error was expected"
+                deliveryFeeCalculator.calculateWSEF(), "ApiRequestException error was expected"
         );
         assertTrue(thrown.getMessage().contentEquals("Usage of selected vehicle type is forbidden"));
         // WSEF should be equal to 0

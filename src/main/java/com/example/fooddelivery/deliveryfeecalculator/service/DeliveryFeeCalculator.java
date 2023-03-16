@@ -12,15 +12,28 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 public class DeliveryFeeCalculator {
 
-    private String city;
-    private String vehicle;
+    private String city; // City for which to calculate the delivery fee.
+    private String vehicle; // Vehicle for which to calculate the delivery fee.
     private double RBF; // Regional base fee
     private double ATEF; // Air temperature extra fee
     private double WSEF; // Wind speed extra fee
     private double WPEF; // Weather phenomenon extra fee
     private WeatherData weatherData; // Weather data about this city
 
-
+    /**
+     * Calculates the delivery fee based on the values set for the deliveryFeeCalculator object.
+     * <p>
+     * This method calculates the delivery fee based on the values set for the deliveryFeeCalculator object,
+     * including the city, vehicle, and weather data.
+     * It first checks if the vehicle type is valid, and if not, throws an ApiRequestException.
+     * Otherwise, it calculates the regional base fee (RBF) for the given city and vehicle type, and if the vehicle type is a
+     * bike or a scooter, calculates additional fees such as the air temperature extra fee (ATEF),
+     * the wind speed extra fee (WPEF), and the weather phenomenon extra fee (WSEF).
+     * Finally, it returns the sum of all the calculated fees.
+     *
+     * @return The calculated delivery fee based on the values set for the deliveryFeeCalculator object.
+     * @throws ApiRequestException If vehicle type is incorrect or any business rules violated.
+     */
     public double calculateFee() throws ApiRequestException {
         if (!checkVehicle(vehicle)) throw new ApiRequestException("Invalid vehicle type!");
         else calculateRBF(this.city, this.vehicle);
@@ -34,13 +47,25 @@ public class DeliveryFeeCalculator {
         return RBF + ATEF + WSEF + WPEF;
     }
 
+    /**
+     * Checks if vehicle type is valid(car, bike or scooter).
+     *
+     * @param vehicle Vehicle that needs to be checked.
+     * @return true if vehicle is valid, false if vehicle is invalid.
+     */
     public boolean checkVehicle(String vehicle) {
         if (!vehicle.equals("car") && !vehicle.equals("bike") && !vehicle.equals("scooter"))
             return false;
         return true;
     }
 
-
+    /**
+     * Calculates the regional base fee (RBF) for the given city and vehicle combination
+     * according to the business rules introduced in the task description.
+     *
+     * @param city    City the name of the city where the delivery is being made
+     * @param vehicle The type of vehicle that will be used for the delivery
+     */
     public void calculateRBF(String city, String vehicle) {
         switch (city) {
             case "tallinn":
@@ -85,6 +110,11 @@ public class DeliveryFeeCalculator {
         }
     }
 
+    /**
+     * Calculates air temperature extra fee(ATEF) based on air temperature according to the business rules introduced in the task description.
+     *
+     * @return Air temperature extra fee(ATEF)
+     */
     public double calculateATEF() {
         double temp = weatherData.getAir_temp();
         if (temp < -10) return 1;
@@ -92,6 +122,12 @@ public class DeliveryFeeCalculator {
         return 0;
     }
 
+    /**
+     * Calculates wind speed extra fee(WSEF) based on wind speed according to the business rules introduced in the task description.
+     *
+     * @return Wind speed extra fee(WSEF)
+     * @throws ApiRequestException If wind speed is larger than 20
+     */
     public double calculateWSEF() throws ApiRequestException {
         double wind_speed = weatherData.getWind_speed();
         if (wind_speed > 20) throw new ApiRequestException("Usage of selected vehicle type is forbidden");
@@ -99,6 +135,12 @@ public class DeliveryFeeCalculator {
         return 0;
     }
 
+    /**
+     * Calculates weather phenomenon extra fee(WPEF) based on weather phenomenon according to the business rules introduced in the task description.
+     *
+     * @return Weather phenomenon extra fee(WPEF)
+     * @throws ApiRequestException If weather phenomenon is glaze, hail, or thunder.
+     */
     public double calculateWPEF() throws ApiRequestException {
         String phenomenon = weatherData.getWeather_phenomenon().toLowerCase();
         if (phenomenon.contains("snow") || phenomenon.contains("sleet")) return 1;
