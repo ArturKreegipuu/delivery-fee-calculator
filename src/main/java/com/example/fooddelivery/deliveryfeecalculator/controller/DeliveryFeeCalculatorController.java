@@ -30,7 +30,7 @@ public class DeliveryFeeCalculatorController {
 
     @Operation(summary = "To save fresh weather data into the database once every hour")
     // The frequency of the cronjob is configurable in application.properties file.
-    @Scheduled(cron = "${app.weather.corn}")
+    @Scheduled(cron = "${app.weather.cron}")
     // New weather data is inserted once every hour, 15 minutes after a full hour (HH:15:00) == (cron = "0 15 * * * *").
     //@Scheduled(fixedRateString = "${app.weather.fixedRate}")
     @PostMapping
